@@ -2,7 +2,7 @@
 # licensed under the Affero General Public License version 3 or later.  See
 # the COPYRIGHT file.
 
-require 'uri'
+require 'addressable/uri'
 require File.join(Rails.root, 'lib', 'enviroment_configuration')
 
 class AppConfig < Settingslogic
@@ -93,11 +93,13 @@ HELP
   end
 
   def self.normalize_pod_url
-    unless self[:pod_url] =~ /^(https?:\/\/)/ # starts with http:// or https://
-      self[:pod_url] = "http://#{self[:pod_url]}"
+    url = Addressable::URI.heuristic_parse(self[:pod_url])
+    if url.scheme.blank?
+      puts url.to_s
+      self[:pod_url] = url.to_s
     end
-    unless self[:pod_url] =~ /\/$/ # ends with slash
-      self[:pod_url] = "#{self[:pod_url]}/"
+    unless url.to_s.ends_with?('/')
+      self[:pod_url] = "#{url.to_s}/" 
     end
   end
 
@@ -127,8 +129,8 @@ HELP
   end
 
   def fetch_from_env(key)
-    if ARRAY_VARS.include?(key.to_sym)
-      ENV[key].split(EnviromentConfiguration::ARRAY_SEPERATOR)
+    if [:community_spotlight, :admins].include?(key.to_sym)
+      ENV[key].to_s.split(EnviromentConfiguration::ARRAY_SEPERATOR)
     else
      ENV[key] if ENV[key] 
     end
@@ -138,21 +140,21 @@ HELP
     super
     if key.to_sym == :pod_url
       @@pod_uri = nil
-      normalize_pod_url
-    end
+      normalize_pod_url_and_update_pod_uri
+   end
   end
 
   cattr_accessor :pod_uri
 
   def self.pod_uri
-    if @@pod_uri.nil?
+    @@pod_uri ||= lambda do
       begin
+        self.normalize_pod_url
         @@pod_uri = Addressable::URI.parse(self[:pod_url])
       rescue
         puts "WARNING: pod url " + self[:pod_url] + " is not a legal URI"
       end
-    end
-    return @@pod_uri
+    end.call
   end
   
   def self.single_process_mode?

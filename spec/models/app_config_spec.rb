@@ -127,6 +127,7 @@ describe AppConfig do
       AppConfig[:pod_url].should == "http://example.org/"
     end
     it "adds http:// on the front if it's missing" do
+      puts 'in the test'
       AppConfig[:pod_url] = "example.org/"
       AppConfig.normalize_pod_url
       AppConfig[:pod_url].should == "http://example.org/"

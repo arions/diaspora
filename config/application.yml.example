@@ -15,7 +15,7 @@ defaults: &defaults
   # However changing http to https is okay and has no consquences. If you do change it
   # you have to start over as it's hardcoded into the database.
   # For development and testing, you can leave this as is.
-  pod_url: "http://localhost:3000"
+  pod_url: "http://localhost:3000/"
 
   # Websocket host - leave as 0.0.0.0 unless you know what you are doing
   socket_host: 0.0.0.0
@@ -107,7 +107,7 @@ defaults: &defaults
   tumblr_consumer_secret: '' 
   # Miscellaneous
 
-  NEW_RELIC_LICENSE_KEY: ''
+  # NEW_RELIC_LICENSE_KEY: ''
 
 
   # If set to true Diaspora will work with just the appserver, thin by default,
