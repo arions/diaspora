@@ -109,15 +109,15 @@ HELP
   end
 
   def self.normalize_pod_services
+    configured_services = []
     if defined?(SERVICES)
-      configured_services = []
       SERVICES.keys.each do |service|
         unless SERVICES[service].keys.any?{|service_key| SERVICES[service][service_key].blank?}
           configured_services << service
         end
       end
-      self['configured_services'] = configured_services
     end
+    self['configured_services'] = configured_services
   end
 
   load!
