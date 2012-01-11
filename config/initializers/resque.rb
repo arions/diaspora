@@ -13,7 +13,7 @@ end
 
 if AppConfig.single_process_mode?
   if Rails.env == 'production'
-    puts "WARNING: You are running Diaspora in production without Resque workers turned on.  Please don't do this."
+    puts "WARNING: You are running Diaspora in production without Resque workers turned on(single process mode).  Please don't do this."
   end
   module Resque
     def enqueue(klass, *args)
